@@ -17,24 +17,23 @@ char *read_file(FILE *file) {
   return buffer;
 }
 
-Token MakeToken(TokenType tokenType, const char *start, size_t length, int line,
-                int column) {
+Token MakeToken(TokenType tokenType, const char *start, size_t length, int line, int column) {
   return (Token){.tokenType = tokenType,
-                 .buffer = start,
-                 .length = length,
-                 .line = line,
-                 .column = column};
+    .buffer = start,
+    .length = length,
+    .line = line,
+    .column = column};
 }
 
 TokenType CheckKeyword(const char *buffer, size_t length) {
   if (length == 3) {
     if (strncmp(buffer, "int", length) == 0)
-      return TT_INT;
+      return TT_VAR_TYPE;
     if (strncmp(buffer, "var", length) == 0)
       return TT_VAR;
   }
   if (length == 6 && strncmp(buffer, "string", length) == 0)
-    return TT_STRING;
+    return TT_VAR_TYPE;
   return TT_IDENTIFIER;
 }
 

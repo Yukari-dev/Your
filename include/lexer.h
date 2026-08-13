@@ -13,6 +13,7 @@ typedef enum {
   TT_SUBTRACT,
   TT_ASTERISK,
   TT_SLASH,
+  TT_VAR_TYPE,
   TT_INT,
   TT_STRING,
   TT_STRING_LITERAL,
@@ -36,12 +37,12 @@ typedef struct{
   int column;
 } Lexer;
 
-Lexer InitLexer(const char *source);
+Lexer *InitLexer(const char *source);
 
 char *read_file(FILE *file);
 
 Token GetNextToken(Lexer *lexer);
 
-Token Tokenize(FILE *file);
+void FreeLexer(Lexer *lexer);
 
 #endif

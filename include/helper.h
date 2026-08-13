@@ -9,8 +9,7 @@ long GetFileSize(FILE *file);
 
 char *read_file(FILE *file);
 
-Token MakeToken(TokenType tokenType, const char *start, size_t length, int line,
-                int column);
+Token MakeToken(TokenType tokenType, const char *start, size_t length, int line, int column);
 
 TokenType CheckKeyword(const char *buffer, size_t length);
 

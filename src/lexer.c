@@ -3,13 +3,13 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-Lexer InitLexer(const char *source){
-  return (Lexer){
-    .source = source,
-    .position = 0,
-    .line = 1,
-    .column = 1
-  };
+Lexer *InitLexer(const char *source){
+  Lexer *lexer = malloc(sizeof(Lexer));
+  lexer->source = source;
+  lexer->position = 0;
+  lexer->line = 1;
+  lexer->column = 1;
+  return lexer;
 }
 
 Token GetNextToken(Lexer *lexer) {
@@ -110,8 +110,7 @@ Token GetNextToken(Lexer *lexer) {
   return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], 1, lexer->line, start_col);
 }
 
-Token Tokenize(FILE *file) {
-  char *buffer = read_file(file);
-
-  return (Token){0};
+void FreeLexer(Lexer *lexer){
+  free(lexer);
+  lexer = NULL;
 }
