@@ -69,13 +69,31 @@ Token GetNextToken(Lexer *lexer) {
   lexer->column++;
 
   switch(current_char){
+    case '+':
+      return MakeToken(TT_ADDITION, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '-':
+      return MakeToken(TT_SUBTRACT, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '*':
+      return MakeToken(TT_ASTERISK, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '/':
+      return MakeToken(TT_SLASH, &lexer->source[start_pos], 1, lexer->line, start_col);
     case '=':
+      if (MatchChar(lexer, '='))
+        return MakeToken(TT_EQUAL_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
       return MakeToken(TT_EQUAL, &lexer->source[start_pos], 1, lexer->line, start_col);
     case '>':
-      return MakeToken(TT_VAR_TYPE_DEC, &lexer->source[start_pos], 1, lexer->line, start_col);
+      if (MatchChar(lexer, '='))
+        return MakeToken(TT_GREATER_OR_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
+      return MakeToken(TT_GREATER, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '~':
+      while (lexer->source[lexer->position] != '\n' && lexer->source[lexer->position]){
+        lexer->position++;
+        lexer->column++;
+      }
+      return GetNextToken(lexer);
   }
 
-  return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], 1, lexer->line, lexer->column);
+  return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], 1, lexer->line, start_col);
 }
 
 Token Tokenize(FILE *file) {

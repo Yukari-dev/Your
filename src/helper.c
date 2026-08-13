@@ -53,6 +53,15 @@ size_t MatchSymbol(const char *buffer, size_t *position, char expected){
   return -1;
 }
 
+bool MatchChar(Lexer *lexer, char expected){
+  if (lexer->source[lexer->position] == expected){
+    lexer->position++;
+    lexer->column++;
+    return true;
+  }
+  return false;
+}
+
 void PrintTokens(const char *buffer){
   Lexer lexer = InitLexer(buffer);
   size_t token_count = 0;
@@ -92,7 +101,13 @@ const char *TokenTypeToString(TokenType type){
       case TT_STRING:          return "TT_STRING";
       case TT_STRING_LITERAL:  return "TT_STRING_LITERAL";
       case TT_EQUAL:           return "TT_EQUAL";
-      case TT_VAR_TYPE_DEC:    return "TT_VAR_TYPE_DEC";
+      case TT_EQUAL_EQUAL:     return "TT_EQUAL_EQUAL";
+      case TT_GREATER_OR_EQUAL:return "TT_GREATER_OR_EQUAL";
+      case TT_GREATER:         return "TT_GREATER";
+      case TT_ADDITION:        return "TT_ADDITION";
+      case TT_SUBTRACT:        return "TT_SUBTRACT";
+      case TT_ASTERISK:        return "TT_ASTERISK";
+      case TT_SLASH:           return "TT_SLASH";
       case TT_EOF:             return "TT_EOF";
       case TT_UNKNOWN:         return "TT_UNKNOWN";
       default:                 return "TT_UNKNOWN";
