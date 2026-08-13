@@ -51,6 +51,20 @@ Token GetNextToken(Lexer *lexer) {
     lexer->position++;
     lexer->column++;
     while(lexer->source[lexer->position] != '"' && lexer->source[lexer->position]){
+      if (lexer->source[lexer->position] == '\\'){
+        lexer->position++;
+        lexer->column++;
+        if(lexer->source[lexer->position]){
+          if(lexer->source[lexer->position] == '\n'){
+            lexer->line++;
+            lexer->column = 1;
+          } else
+            lexer->column++;
+          lexer->position++;
+        }
+        continue;
+      }
+
       if(lexer->source[lexer->position] == '\n'){
         lexer->line++;
         lexer->column = 1;
