@@ -5,7 +5,9 @@
 
 long GetFileSize(FILE *file);
 
-Token MakeToken(TokenType tokenType, const char *start, size_t length, size_t *position, size_t new_pos);
+char *read_file(FILE *file);
+
+Token MakeToken(TokenType tokenType, const char *start, size_t length, int line, int column);
 
 TokenType CheckKeyword(const char *buffer, size_t length);
 

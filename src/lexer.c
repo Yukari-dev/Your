@@ -3,61 +3,79 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-char *read_file(FILE *file) {
-  long file_size = GetFileSize(file);
-  char *buffer = malloc(sizeof(char) * (file_size + 1));
-  fread(buffer, 1, file_size, file);
-  buffer[file_size] = '\0';
-  return buffer;
+Lexer InitLexer(const char *source){
+  return (Lexer){
+    .source = source,
+    .position = 0,
+    .line = 1,
+    .column = 1
+  };
 }
 
-Token GetNextToken(const char *buffer, size_t *position) {
-  size_t current = *position;
-  int line = 1;
-  int column = 0;
-  while (buffer[current] && isspace(buffer[current])){
-    if(buffer[current] == '\n')
-      line++;
-    column++;
-    current++;
+Token GetNextToken(Lexer *lexer) {
+  while (lexer->source[lexer->position] && isspace(lexer->source[lexer->position])){
+    if (lexer->source[lexer->position] == '\n'){
+      lexer->line++;
+      lexer->column = 1;
+    } else
+      lexer->column++;
+    lexer->position++;
   }
 
-  if (buffer[current] == '\0'){
-    *position = current;
-    return MakeToken(TT_EOF, &buffer[current], 0, position, current);
+  if(lexer->source[lexer->position] == '\0')
+    return MakeToken(TT_EOF, &lexer->source[lexer->position], 0, lexer->line, lexer->column);
+
+  size_t start_pos = lexer->position;
+  int start_col = lexer->column;
+  if(isalpha(lexer->source[lexer->position]) || lexer->source[lexer->position] == '_'){
+    while(isalnum(lexer->source[lexer->position]) || lexer->source[lexer->position] == '_'){
+      lexer->position++;
+      lexer->column++;
+    }
+
+    int length = lexer->position - start_pos;
+    TokenType type = CheckKeyword(&lexer->source[start_pos], length);
+    return MakeToken(type, &lexer->source[start_pos], length, lexer->line, start_col);
+  }
+
+  if(isdigit(lexer->source[lexer->position])){
+    while(isdigit(lexer->source[lexer->position])){
+      lexer->position++;
+      lexer->column++;
+    }
+    return MakeToken(TT_NUMBER, &lexer->source[start_pos], lexer->position - start_pos, lexer->line, start_col);
   }
   
-  if(isalpha(buffer[current]) || buffer[current] == '_'){
-    size_t start = current;
-    while (isalnum(buffer[current]) || buffer[current] == '_')
-      current++;
-    size_t length = current - start;
-    TokenType type = CheckKeyword(&buffer[start], length);
-    return MakeToken(type, &buffer[start], length, position, current);
+  char current_char = lexer->source[lexer->position];
+  if(current_char == '"'){
+    lexer->position++;
+    lexer->column++;
+    while(lexer->source[lexer->position] != '"' && lexer->source[lexer->position]){
+      if(lexer->source[lexer->position] == '\n'){
+        lexer->line++;
+        lexer->column = 1;
+      } else
+        lexer->column++;
+      lexer->position++;
+    }
+    if(lexer->source[lexer->position] == '\0')
+      return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], lexer->position - start_pos, lexer->line, start_col);
+    lexer->position++;
+    lexer->column++;
+    int content_length = lexer->position - start_pos - 2;
+    return MakeToken(TT_STRING_LITERAL, &lexer->source[start_pos + 1], content_length, lexer->line, start_col);
   }
-  if(isdigit(buffer[current])){
-    size_t start = current;
-    while (isdigit(buffer[current]))
-      current++;
-    return MakeToken(TT_NUMBER, &buffer[start], current - start, position, current);
-  }
-  size_t start = current;
-  switch(buffer[current]){
-    case '=': return MakeToken(TT_EQUAL, &buffer[start], 1, position, current + 1);
-    case '>': return MakeToken(TT_VAR_TYPE_DEC, &buffer[start], 1, position, current + 1);
-    case '"':
-      size_t start = current;
-      current++;
-      while (buffer[current] != '"' && buffer[current] != '\0')
-        current++;
-      if (buffer[current] == '\0')
-        return MakeToken(TT_UNKNOWN, &buffer[start], 1, position, current + 1);
-      current++;
-      size_t content_length = current - start - 2;
-      return MakeToken(TT_STRING_LITERAL, &buffer[start + 1], content_length, position, current);
+  lexer->position++;
+  lexer->column++;
+
+  switch(current_char){
+    case '=':
+      return MakeToken(TT_EQUAL, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '>':
+      return MakeToken(TT_VAR_TYPE_DEC, &lexer->source[start_pos], 1, lexer->line, start_col);
   }
 
-  return MakeToken(TT_UNKNOWN, &buffer[start], 1, position, current + 1);
+  return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], 1, lexer->line, lexer->column);
 }
 
 Token Tokenize(FILE *file) {

@@ -1,5 +1,6 @@
 #include "../include/helper.h"
 #include <string.h>
+#include <stdlib.h>
 
 long GetFileSize(FILE *file) {
   fseek(file, 0, SEEK_END);
@@ -8,12 +9,21 @@ long GetFileSize(FILE *file) {
   return size;
 }
 
-Token MakeToken(TokenType tokenType, const char *start, size_t length, size_t *position, size_t new_pos){
-  *position = new_pos;
+char *read_file(FILE *file) {
+  long file_size = GetFileSize(file);
+  char *buffer = malloc(sizeof(char) * (file_size + 1));
+  fread(buffer, 1, file_size, file);
+  buffer[file_size] = '\0';
+  return buffer;
+}
+
+Token MakeToken(TokenType tokenType, const char *start, size_t length, int line, int column){
   return (Token){
     .tokenType = tokenType,
     .buffer = start,
-    .length = length
+    .length = length,
+    .line   = line,
+    .column = column
   };
 }
 
@@ -44,18 +54,22 @@ size_t MatchSymbol(const char *buffer, size_t *position, char expected){
 }
 
 void PrintTokens(const char *buffer){
-  size_t position = 0;
+  Lexer lexer = InitLexer(buffer);
   size_t token_count = 0;
 
   printf("\n============================ LEXER ============================\n");
-  printf("%-5s | %-24s | %-6s | %s\n", "INDEX", "TOKEN TYPE", "LENGTH", "VALUE");
+  printf("%-5s | %-7s | %-24s | %-6s | %s\n", "INDEX", "LINE:COL", "TOKEN TYPE", "LENGTH", "VALUE");
   printf("===============================================================\n");
   while (1){
-    Token token = GetNextToken(buffer, &position);
+    Token token = GetNextToken(&lexer);
     token_count++;
 
-    printf("[%03zu] | %-24s | %-6zu | \"%.*s\"\n",
+    char pos_buf[16];
+    snprintf(pos_buf, sizeof(pos_buf), "%d:%d", token.line, token.column);
+
+    printf("[%03zu] | %-8s | %-24s | %-6zu | \"%.*s\"\n",
       token_count,
+      pos_buf,
       TokenTypeToString(token.tokenType),
       token.length,
       (int)token.length,

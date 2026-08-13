@@ -23,9 +23,18 @@ typedef struct {
   int column;
 } Token;
 
+typedef struct{
+  const char *source;
+  size_t position;
+  int line;
+  int column;
+} Lexer;
+
+Lexer InitLexer(const char *source);
+
 char *read_file(FILE *file);
 
-Token GetNextToken(const char *buffer, size_t *position);
+Token GetNextToken(Lexer *lexer);
 
 Token Tokenize(FILE *file);
 
