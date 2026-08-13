@@ -60,6 +60,16 @@ bool MatchChar(Lexer *lexer, char expected) {
   return false;
 }
 
+bool IsVariableNumber(const char *s){
+  return (strcmp(s, "int") == 0 || strcmp(s, "float") == 0);
+}
+
+bool VariableComparison(const char *s1, const char *s2){
+  if ((strcmp(s1, "number") == 0 || strcmp(s2, "number") == 0) && (IsVariableNumber(s1) || IsVariableNumber(s2)))
+    return true;
+  return strcmp(s1, s2) == 0;
+}
+
 void PrintToken(Token token, size_t token_count, char *pos_buf) {
   printf("[%03zu] | %-8s | %-24s | %-6zu | \"%.*s\"\n", token_count, pos_buf,
          TokenTypeToString(token.tokenType), token.length, (int)token.length,
@@ -67,7 +77,7 @@ void PrintToken(Token token, size_t token_count, char *pos_buf) {
 }
 
 void PrintTokens(const char *buffer) {
-  Lexer lexer = InitLexer(buffer);
+  Lexer *lexer = InitLexer(buffer);
   size_t token_count = 0;
 
   printf("\n============================ LEXER ============================\n");
@@ -75,7 +85,7 @@ void PrintTokens(const char *buffer) {
          "LENGTH", "VALUE");
   printf("===============================================================\n");
   while (1) {
-    Token token = GetNextToken(&lexer);
+    Token token = GetNextToken(lexer);
     token_count++;
 
     char pos_buf[16];
@@ -106,39 +116,33 @@ void PrintAST(ASTNode *node, int level) {
 
 const char *TokenTypeToString(TokenType type) {
   switch (type) {
-  case TT_IDENTIFIER:
-    return "TT_IDENTIFIER";
-  case TT_VAR:
-    return "TT_VAR";
-  case TT_NUMBER:
-    return "TT_NUMBER";
-  case TT_INT:
-    return "TT_INT";
-  case TT_STRING:
-    return "TT_STRING";
-  case TT_STRING_LITERAL:
-    return "TT_STRING_LITERAL";
-  case TT_EQUAL:
-    return "TT_EQUAL";
-  case TT_EQUAL_EQUAL:
-    return "TT_EQUAL_EQUAL";
-  case TT_GREATER_OR_EQUAL:
-    return "TT_GREATER_OR_EQUAL";
-  case TT_GREATER:
-    return "TT_GREATER";
-  case TT_ADDITION:
-    return "TT_ADDITION";
-  case TT_SUBTRACT:
-    return "TT_SUBTRACT";
-  case TT_ASTERISK:
-    return "TT_ASTERISK";
-  case TT_SLASH:
-    return "TT_SLASH";
-  case TT_EOF:
-    return "TT_EOF";
-  case TT_UNKNOWN:
-    return "TT_UNKNOWN";
-  default:
-    return "TT_UNKNOWN";
+    case TT_IDENTIFIER: return "TT_IDENTIFIER";
+    case TT_VAR: return "TT_VAR";
+    case TT_NUMBER: return "TT_NUMBER";
+    case TT_INT: return "TT_INT";
+    case TT_STRING: return "TT_STRING";
+    case TT_STRING_LITERAL: return "TT_STRING_LITERAL";
+    case TT_EQUAL: return "TT_EQUAL";
+    case TT_EQUAL_EQUAL: return "TT_EQUAL_EQUAL";
+    case TT_GREATER_OR_EQUAL: return "TT_GREATER_OR_EQUAL";
+    case TT_GREATER: return "TT_GREATER";
+    case TT_ADDITION: return "TT_ADDITION";
+    case TT_SUBTRACT: return "TT_SUBTRACT";
+    case TT_ASTERISK: return "TT_ASTERISK";
+    case TT_SLASH: return "TT_SLASH";
+    case TT_EOF: return "TT_EOF";
+    case TT_UNKNOWN: return "TT_UNKNOWN";
+    default: return "TT_UNKNOWN";
+  }
+}
+
+const char *ValueTypeToString(ValueType type){
+  switch(type){
+    case VT_STRING: return "string";
+    case VT_NUMBER: return "number";
+    case VT_BOOL:   return "bool";
+    case VT_CHAR:   return "char";
+    case VT_NULL:   return "null";
+    default:        return "null";
   }
 }

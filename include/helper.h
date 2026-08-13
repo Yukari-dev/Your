@@ -2,6 +2,7 @@
 #define HELPER_H
 #include "AST.h"
 #include "lexer.h"
+#include "SymbolTable.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -15,9 +16,15 @@ TokenType CheckKeyword(const char *buffer, size_t length);
 
 const char *TokenTypeToString(TokenType type);
 
+const char *ValueTypeToString(ValueType type);
+
 size_t MatchSymbol(const char *buffer, size_t *position, char expected);
 
 bool MatchChar(Lexer *lexer, char expected);
+
+bool IsVariableNumber(const char *s);
+
+bool VariableComparison(const char *s1, const char *s2);
 
 void PrintToken(Token token, size_t token_count, char *pos_buf);
 

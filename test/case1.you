@@ -7,6 +7,6 @@
 var a > int = 1
 var b > int = 6
 var c > string = "Hello world"
-a = 2
+a = 1
 b = a + b
-c = "Yeah..."
+c = 1

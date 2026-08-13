@@ -147,7 +147,7 @@ ASTNode *ParseProgram(Parser *parser){
 
     if(stmt){
       EvaluateAST(stmt, parser->table);
-      PrintSymbolTable(parser->table);
+      // PrintSymbolTable(parser->table);
       FreeASTNode(stmt);
     }
   }
@@ -161,6 +161,14 @@ Value EvaluateAST(ASTNode *node, SymbolTable *table) {
 
   if (node->type == NT_VAR_DECL){
     Value val = EvaluateAST(node->NodeData.varDecl.value, table);
+    if (!VariableComparison(node->NodeData.varDecl.typeName, ValueTypeToString(val.valueType))){
+      printf("Type Error: Cannot assign [%s] to [%s] variable [%s]\n", 
+              node->NodeData.varDecl.typeName, 
+              ValueTypeToString(val.valueType),
+              node->NodeData.varDecl.name
+      );
+      return MakeNull();
+    }
     SetSymbol(table, node->NodeData.varDecl.name, val);
     return val;
   }
@@ -180,6 +188,14 @@ Value EvaluateAST(ASTNode *node, SymbolTable *table) {
       return MakeNull();
     }
     Value val = EvaluateAST(node->NodeData.assignment.value, table);
+    if (!VariableComparison(ValueTypeToString(dummy.valueType), ValueTypeToString(val.valueType))){
+      printf("Type Error: Cannot assign [%s] to [%s] variable [%s]\n", 
+              ValueTypeToString(dummy.valueType), 
+              ValueTypeToString(val.valueType),
+              node->NodeData.varDecl.name
+      );
+      return MakeNull();
+    }
     SetSymbol(table, node->NodeData.assignment.name, val);
     return val;
   }
