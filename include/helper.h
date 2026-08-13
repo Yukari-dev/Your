@@ -2,6 +2,8 @@
 #define HELPER_H
 #include <stdio.h>
 
-int get_line_size(FILE *file);
+long GetFileSize(FILE *file);
+
+char *GetWord(const char *buffer, long position);
 
 #endif

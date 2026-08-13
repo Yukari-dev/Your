@@ -1,3 +1,4 @@
+#include "include/lexer.h"
 #include <stdio.h>
 
 int main(int ac, char *av[]) {
@@ -6,8 +7,8 @@ int main(int ac, char *av[]) {
     perror("Error opening file");
     return -1;
   }
-  fseek(file, 0, SEEK_END);
-  printf("%ld\n", ftell(file));
+  char *buffer = read_file(file);
+  PrintTokens(buffer);
   fclose(file);
   return 0;
 }
