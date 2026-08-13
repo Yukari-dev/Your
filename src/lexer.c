@@ -13,61 +13,51 @@ char *read_file(FILE *file) {
 
 Token GetNextToken(const char *buffer, size_t *position) {
   size_t current = *position;
-  while (buffer[current] != '\0' && isspace(buffer[current]))
+  int line = 1;
+  int column = 0;
+  while (buffer[current] && isspace(buffer[current])){
+    if(buffer[current] == '\n')
+      line++;
+    column++;
     current++;
-
-  if (buffer[current] == '\0') {
-    *position = current;
-    return (Token){
-        .tokenType = TT_EOF, .buffer = &buffer[current], .length = 0};
   }
 
-  if (isalpha(buffer[current]) || buffer[current] == '_') {
+  if (buffer[current] == '\0'){
+    *position = current;
+    return MakeToken(TT_EOF, &buffer[current], 0, position, current);
+  }
+  
+  if(isalpha(buffer[current]) || buffer[current] == '_'){
     size_t start = current;
-
     while (isalnum(buffer[current]) || buffer[current] == '_')
       current++;
-
     size_t length = current - start;
-    *position = current;
-    return (Token){
-        .tokenType = TT_IDENTIFIER,
-        .buffer = &buffer[start],
-        .length = length,
-    };
+    TokenType type = CheckKeyword(&buffer[start], length);
+    return MakeToken(type, &buffer[start], length, position, current);
+  }
+  if(isdigit(buffer[current])){
+    size_t start = current;
+    while (isdigit(buffer[current]))
+      current++;
+    return MakeToken(TT_NUMBER, &buffer[start], current - start, position, current);
   }
   size_t start = current;
-  current++;
-  *position = current;
-
-  return (Token){
-    .tokenType = TT_UNKNOWN, 
-    .buffer = &buffer[start], 
-    .length = 1
-  };
-}
-
-void PrintTokens(const char *buffer) {
-  size_t position = 0;
-  while (buffer[position]) {
-    Token token = GetNextToken(buffer, &position);
-    if (token.tokenType == TT_EOF)
-      break;
-    for(size_t i = 0; i < token.length; i++){
-      printf("%c", token.buffer[i]);
-    }
-    printf(" ");
-    switch(token.tokenType){
-      case TT_VAR:
-        printf("VAR\n");
-      case TT_IDENTIFIER:
-        printf("IDENTIFIER\n");
-      case TT_UNKNOWN:
-        printf("UNKNOWN\n");
-      case TT_EOF:
-        printf("EOF\n");
-    }
+  switch(buffer[current]){
+    case '=': return MakeToken(TT_EQUAL, &buffer[start], 1, position, current + 1);
+    case '>': return MakeToken(TT_VAR_TYPE_DEC, &buffer[start], 1, position, current + 1);
+    case '"':
+      size_t start = current;
+      current++;
+      while (buffer[current] != '"' && buffer[current] != '\0')
+        current++;
+      if (buffer[current] == '\0')
+        return MakeToken(TT_UNKNOWN, &buffer[start], 1, position, current + 1);
+      current++;
+      size_t content_length = current - start - 2;
+      return MakeToken(TT_STRING_LITERAL, &buffer[start + 1], content_length, position, current);
   }
+
+  return MakeToken(TT_UNKNOWN, &buffer[start], 1, position, current + 1);
 }
 
 Token Tokenize(FILE *file) {
