@@ -23,6 +23,7 @@ ASTNode *ParseTerm(Parser *parser);
 ASTNode *ParseExpression(Parser *parser);
 ASTNode *ParseVarDecl(Parser *parser);
 ASTNode *ParseFnDecl(Parser *parser);
+ASTNode *ParseWhen(Parser *parser);
 ASTNode *ParseStatement(Parser *parser);
 ASTNode *ParseProgram(Parser *parser);
 Value ExecuteFn(ASTNode *fnNode, Value *args, size_t argCount, SymbolTable *globalTable);

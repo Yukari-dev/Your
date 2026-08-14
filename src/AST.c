@@ -104,6 +104,19 @@ ASTNode *CreateFnCallNode(char *name, ASTNode **args, size_t argCount){
   return node;
 }
 
+ASTNode *CreateWhenNode(ASTNode *condition, ASTNode **body, size_t statementCount){
+  ASTNode *node = malloc(sizeof(ASTNode));
+  if (!node)
+    return NULL;
+  node->type = NT_WHEN;
+  node->NodeData.when.statementCount = statementCount;
+  node->NodeData.when.condition = condition; 
+  node->NodeData.when.body = malloc(sizeof(ASTNode*) * statementCount);
+  for(size_t i = 0; i < statementCount; i++)
+    node->NodeData.when.body[i] = body[i];
+  return node;
+}
+
 void FreeASTNode(ASTNode *node){
   if (!node)
     return;

@@ -39,9 +39,13 @@ TokenType CheckKeyword(const char *buffer, size_t length) {
   if(length == 4){
     if(strncmp(buffer, "give", length) == 0)
       return TT_GIVE;
+    if(strncmp(buffer, "when", length) == 0)
+      return TT_WHEN;
   }
   if (length == 6 && strncmp(buffer, "string", length) == 0)
     return TT_VAR_TYPE;
+  if(length == 7 && strncmp(buffer, "otherwise", length) == 0)
+    return TT_OTHERWISE;
   return TT_IDENTIFIER;
 }
 
@@ -132,7 +136,7 @@ const char *TokenTypeToString(TokenType type) {
     case TT_STRING_LITERAL: return "TT_STRING_LITERAL";
     case TT_EQUAL: return "TT_EQUAL";
     case TT_EQUAL_EQUAL: return "TT_EQUAL_EQUAL";
-    case TT_GREATER_OR_EQUAL: return "TT_GREATER_OR_EQUAL";
+    case TT_GREATER_EQUAL: return "TT_GREATER_OR_EQUAL";
     case TT_GREATER: return "TT_GREATER";
     case TT_ADDITION: return "TT_ADDITION";
     case TT_SUBTRACT: return "TT_SUBTRACT";

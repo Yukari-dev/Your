@@ -12,6 +12,7 @@ typedef enum {
   NT_FN_DECL,
   NT_GIVE,
   NT_FN_CALL,
+  NT_WHEN,
 } NodeType;
 
 typedef struct {
@@ -55,6 +56,12 @@ typedef struct{
   size_t argCount;
 } FnCall;
 
+typedef struct{
+  struct s_ASTNode *condition;
+  struct s_ASTNode **body;
+  size_t statementCount;
+} WhenNode;
+
 typedef struct s_ASTNode {
   NodeType type;
   union {
@@ -67,6 +74,7 @@ typedef struct s_ASTNode {
     FnDecl fnDecl;
     GiveStatement giveStatement;
     FnCall fnCall;
+    WhenNode when;
   } NodeData;
 } ASTNode;
 
@@ -87,6 +95,8 @@ ASTNode *CreateFnDeclNode(char *name, char *giveType, Parameter *params, size_t 
 ASTNode *CreateGiveNode(ASTNode *giveNode);
 
 ASTNode *CreateFnCallNode(char *name, ASTNode **args, size_t argCount);
+
+ASTNode *CreateWhenNode(ASTNode *condition, ASTNode **body, size_t statementCount);
 
 void FreeASTNode(ASTNode *node);
 

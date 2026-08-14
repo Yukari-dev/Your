@@ -1,8 +1,9 @@
-
 fn fib > int : n > int ~>
-  give (fib: n - 1) + (fib: n - 2)
+  when n <= 1~>
+    give n
+  <~
+  give (fib : n - 2) + (fib : n - 1)
 <~
 
-var x > int = 5
-
-var result > int = fib : x
+var n > int = 10
+reveal : "fibonacci of %d is %d", n, fib : n

@@ -97,12 +97,17 @@ Token GetNextToken(Lexer *lexer) {
       return MakeToken(TT_EQUAL, &lexer->source[start_pos], 1, lexer->line, start_col);
     case '>':
       if (MatchChar(lexer, '='))
-        return MakeToken(TT_GREATER_OR_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
+        return MakeToken(TT_GREATER_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
       return MakeToken(TT_GREATER, &lexer->source[start_pos], 1, lexer->line, start_col);
     case '<':
       if(MatchChar(lexer, '~'))
         return MakeToken(TT_CLOSE_SCOPE, &lexer->source[start_pos], 2, lexer->line, start_col);
+      if(MatchChar(lexer, '='))
+        return MakeToken(TT_LESS_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
       return MakeToken(TT_LESS, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '!':
+      if(MatchChar(lexer, '='))
+        return MakeToken(TT_NOT_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
     case '~':
       if (MatchChar(lexer, '>'))
         return MakeToken(TT_OPEN_SCOPE, &lexer->source[start_pos], 2, lexer->line, start_col);
