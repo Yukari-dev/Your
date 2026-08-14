@@ -99,12 +99,26 @@ Token GetNextToken(Lexer *lexer) {
       if (MatchChar(lexer, '='))
         return MakeToken(TT_GREATER_OR_EQUAL, &lexer->source[start_pos], 2, lexer->line, start_col);
       return MakeToken(TT_GREATER, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '<':
+      if(MatchChar(lexer, '~'))
+        return MakeToken(TT_CLOSE_SCOPE, &lexer->source[start_pos], 2, lexer->line, start_col);
+      return MakeToken(TT_LESS, &lexer->source[start_pos], 1, lexer->line, start_col);
     case '~':
+      if (MatchChar(lexer, '>'))
+        return MakeToken(TT_OPEN_SCOPE, &lexer->source[start_pos], 2, lexer->line, start_col);
       while (lexer->source[lexer->position] != '\n' && lexer->source[lexer->position]){
         lexer->position++;
         lexer->column++;
       }
       return GetNextToken(lexer);
+    case ':':
+      return MakeToken(TT_COLON, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case ',':
+      return MakeToken(TT_COMMA, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case '(':
+      return MakeToken(TT_OPEN_PAREN, &lexer->source[start_pos], 1, lexer->line, start_col);
+    case ')':
+      return MakeToken(TT_CLOSE_PAREN, &lexer->source[start_pos], 1, lexer->line, start_col);
   }
 
   return MakeToken(TT_UNKNOWN, &lexer->source[start_pos], 1, lexer->line, start_col);

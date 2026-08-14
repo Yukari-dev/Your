@@ -1,7 +1,6 @@
 #include "include/helper.h"
 #include "include/lexer.h"
 #include "include/parser.h"
-#include "include/SymbolTable.h"
 #include <stdio.h>
 
 int main(int ac, char *av[]) {

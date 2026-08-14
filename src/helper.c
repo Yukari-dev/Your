@@ -26,11 +26,19 @@ Token MakeToken(TokenType tokenType, const char *start, size_t length, int line,
 }
 
 TokenType CheckKeyword(const char *buffer, size_t length) {
+  if(length == 2){
+    if(strncmp(buffer, "fn", length) == 0)
+      return TT_FN_DECL;
+  }
   if (length == 3) {
     if (strncmp(buffer, "int", length) == 0)
       return TT_VAR_TYPE;
     if (strncmp(buffer, "var", length) == 0)
       return TT_VAR;
+  }
+  if(length == 4){
+    if(strncmp(buffer, "give", length) == 0)
+      return TT_GIVE;
   }
   if (length == 6 && strncmp(buffer, "string", length) == 0)
     return TT_VAR_TYPE;
@@ -130,6 +138,13 @@ const char *TokenTypeToString(TokenType type) {
     case TT_SUBTRACT: return "TT_SUBTRACT";
     case TT_ASTERISK: return "TT_ASTERISK";
     case TT_SLASH: return "TT_SLASH";
+    case TT_FN_DECL: return "TT_FN_DECL";
+    case TT_VAR_TYPE: return "TT_VAR_TYPE";
+    case TT_GIVE: return "TT_GIVE";
+    case TT_COLON: return "TT_COLON";
+    case TT_COMMA: return "TT_COMMA";
+    case TT_OPEN_SCOPE: return "TT_OPEN_SCOPE";
+    case TT_CLOSE_SCOPE: return "TT_CLOSE_SCOPE";
     case TT_EOF: return "TT_EOF";
     case TT_UNKNOWN: return "TT_UNKNOWN";
     default: return "TT_UNKNOWN";

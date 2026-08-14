@@ -3,16 +3,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-SymbolTable *InitSymbolTable(int initialCapacity){
+SymbolTable *InitSymbolTable(){
   SymbolTable *symbolTable = malloc(sizeof(SymbolTable));
-  if(!symbolTable)
-    return NULL;
+  if(!symbolTable) return NULL;
 
   symbolTable->count = 0;
-  symbolTable->capacity = initialCapacity;
-  symbolTable->symbols = malloc(symbolTable->capacity);
+  symbolTable->capacity = 16;
+  symbolTable->symbols = malloc(symbolTable->capacity * sizeof(Symbol *));
+  symbolTable->parent = NULL;
 
   return symbolTable;
+}
+
+SymbolTable *CreateScope(SymbolTable *parent){
+  SymbolTable *symbolTable = InitSymbolTable();
+  symbolTable->parent = parent;
+  return symbolTable;
+}
+
+void FreeScope(SymbolTable *scope){
+  if(!scope) return;
+
+  for(size_t i = 0; i < scope->count; i++){
+    free(scope->symbols[i]);
+  }
+  free(scope->symbols);
+  free(scope);
 }
 
 void SetSymbol(SymbolTable *table, char *name, Value val){
@@ -33,12 +49,30 @@ void SetSymbol(SymbolTable *table, char *name, Value val){
   table->count++;
 }
 
-bool GetSymbol(SymbolTable *table, char *name, Value *out_val){
-  for(size_t i = 0; i < table->count; i++){
-    if (strcmp(table->symbols[i]->name, name) == 0){
-      *out_val = table->symbols[i]->value;
-      return true;
+bool UpdateSymbol(SymbolTable *table, char *name, Value val) {
+  for (SymbolTable *current = table; current != NULL; current = current->parent) {
+    for (size_t i = 0; i < current->count; i++) {
+      if (strcmp(current->symbols[i]->name, name) == 0) {
+        current->symbols[i]->value = val;
+        return true;
+      }
     }
+  }
+
+  return false;
+}
+
+bool GetSymbol(SymbolTable *table, char *name, Value *outVal){
+  for(SymbolTable *current = table; current != NULL; current = current->parent){
+    for(size_t i = 0; i < current->count; i++){
+      if (strcmp(current->symbols[i]->name, name) == 0){
+        *outVal = current->symbols[i]->value;
+        return true;
+      }
+    }
+  }
+  if (table->parent != NULL) {
+    return GetSymbol(table->parent, name, outVal);
   }
   return false;
 }
@@ -64,6 +98,14 @@ void PrintSymbolTable(SymbolTable *table) {
     }
   }
   printf("===========================================\n\n");
+}
+
+void FreeSymbolTable(SymbolTable *table){
+  if(!table) return;
+  for(size_t i = 0; i < table->count; i++)
+    free(table->symbols[i]);
+  free(table->symbols);
+  free(table);
 }
 
 Value MakeBoolean(bool b) {

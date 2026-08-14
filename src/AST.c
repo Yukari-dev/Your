@@ -66,6 +66,44 @@ ASTNode *CreateVarDeclNode(char *name, char *typeName, ASTNode *value){
   return node;
 }
 
+ASTNode *CreateFnDeclNode(char *name, char *giveType, Parameter *params, size_t paramCount, ASTNode **body, size_t stmtCount){
+  ASTNode *node = malloc(sizeof(ASTNode));
+  if (!node)
+    return NULL;
+  node->type = NT_FN_DECL;
+  strncpy(node->NodeData.fnDecl.name, name, 64);
+  strncpy(node->NodeData.fnDecl.giveType, giveType, 32);
+  node->NodeData.fnDecl.paramCount = paramCount;
+  node->NodeData.fnDecl.statementCount = stmtCount;
+
+  for(size_t i = 0; i < paramCount; i++)
+    node->NodeData.fnDecl.params[i] = params[i];
+  for(size_t i = 0; i < stmtCount; i++)
+    node->NodeData.fnDecl.body[i] = body[i];
+  return node;
+}
+
+ASTNode *CreateGiveNode(ASTNode *giveNode){
+  ASTNode *node = malloc(sizeof(ASTNode));
+  if (!node)
+    return NULL;
+  node->type = NT_GIVE;
+  node->NodeData.giveStatement.value = giveNode;
+  return node;
+}
+
+ASTNode *CreateFnCallNode(char *name, ASTNode **args, size_t argCount){
+  ASTNode *node = malloc(sizeof(ASTNode));
+  if (!node)
+    return NULL;
+  node->type = NT_FN_CALL;
+  strncpy(node->NodeData.fnCall.name, name, 64);
+  node->NodeData.fnCall.argCount = argCount;
+  for(size_t i = 0; i < argCount; i++)
+    node->NodeData.fnCall.args[i] = args[i];
+  return node;
+}
+
 void FreeASTNode(ASTNode *node){
   if (!node)
     return;

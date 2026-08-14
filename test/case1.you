@@ -1,12 +1,8 @@
-~this is a comment
 
-~fn name > int : a > int, b > string ~>
-~  give 3
-~>
+fn fib > int : n > int ~>
+  give (fib: n - 1) + (fib: n - 2)
+<~
 
-var a > int = 1
-var b > int = 6
-var c > string = "Hello world"
-a = 1
-b = a + b
-c = 1
+var x > int = 5
+
+var result > int = fib : x

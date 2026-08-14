@@ -3,12 +3,16 @@
 #include <stdio.h>
 
 typedef enum {
+  TT_UNKNOWN = 0,
   TT_VAR,
   TT_IDENTIFIER,
   TT_EQUAL,
   TT_EQUAL_EQUAL,
   TT_GREATER,
   TT_GREATER_OR_EQUAL,
+  TT_LESS,
+  TT_LESS_OR_EQUAL,
+  TT_COLON,
   TT_ADDITION,
   TT_SUBTRACT,
   TT_ASTERISK,
@@ -18,8 +22,17 @@ typedef enum {
   TT_STRING,
   TT_STRING_LITERAL,
   TT_NUMBER,
+  TT_TILDE,
+  TT_FN_DECL,
+  TT_GIVE,
+  TT_COMMA,
+  TT_OPEN_SCOPE,
+  TT_CLOSE_SCOPE,
+  TT_OPEN_PAREN,
+  TT_CLOSE_PAREN,
+  TT_WHEN,
+  TT_OTHERWISE,
   TT_EOF,
-  TT_UNKNOWN,
 } TokenType;
 
 typedef struct {
@@ -30,7 +43,7 @@ typedef struct {
   int column;
 } Token;
 
-typedef struct{
+typedef struct {
   const char *source;
   size_t position;
   int line;
