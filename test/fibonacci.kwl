@@ -5,5 +5,5 @@ fn fib > int : n > int ~>
   give (fib : n - 2) + (fib : n - 1)
 <~
 
-var n > int = 10
-reveal : "fibonacci of %d is %d", n, fib : n
+var x > int = 10
+reveal : "result for %d is %d", x, fib : x
