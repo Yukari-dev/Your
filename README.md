@@ -3,7 +3,7 @@
 
 Designed to be very __simple__, *easy* to use.
 
-This compiler was built as a challenge between me and my friend [Github Profile](https://github.com/ily4sss).
+This compiler was built as a challenge between me and my friend [@ily4ss](https://github.com/ily4sss).
 
 ## USAGE:
 
